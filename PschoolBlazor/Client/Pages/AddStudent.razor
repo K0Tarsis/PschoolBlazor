@@ -1,0 +1,41 @@
+﻿@page "/AddStudent"
+@using PschoolBlazor.Shared;
+@inject NavigationManager NavManager
+<h3>Create new student</h3>
+<PageTitle>Add student</PageTitle>
+<EditForm Model="@student" OnValidSubmit="@AddNewStudent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="student.FirstName" placeholder="First Name"/>
+    <InputText id="lastname" @bind-Value="student.LastName" placeholder="Second Name" />
+    Parent:
+    <InputSelect @bind-Value="parentId" Items="parents">
+        @foreach(var parent in parents)
+        {
+            <option value="@parent.Id">@parent.FirstName @parent.LastName</option>
+        }
+    </InputSelect>
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    private Student student=new Student();
+    private List<Parent> parents;
+    private int parentId = 0;
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    [Inject]
+    AppState AppState { get; set; }
+    private bool errorFlag = false;
+    protected override void OnInitialized()
+    {
+        parents = AppState.Parents;
+    }
+    private void AddNewStudent()
+    {
+        Parent parent = parents.FirstOrDefault(p => p.Id == parentId);
+        parent.Students.Add(student);
+        student.Parent = parent;
+        AppState.Students.Add(student);
+        Navigation.NavigateTo("/StudentsList");
+    }
+}

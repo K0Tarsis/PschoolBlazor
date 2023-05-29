@@ -1,0 +1,31 @@
+﻿@page "/AddParent"
+@using PschoolBlazor.Shared;
+@inject NavigationManager NavManager
+<h3>Create new parent</h3>
+<PageTitle>Add parent</PageTitle>
+<EditForm Model="@parent" OnValidSubmit="@AddNewParent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="parent.FirstName" />
+    <InputText id="lastname" @bind-Value="parent.LastName" />
+    <InputText id="email" @bind-Value="parent.Email" />
+    <InputText id="username" @bind-Value="parent.Username" />
+    <InputText id="homeaddress" @bind-Value="parent.HomeAddress" />
+    <InputText id="phone1" @bind-Value="parent.Phone1" />
+    <InputText id="workphone" @bind-Value="parent.WorkPhone" />
+    <InputText id="homephone" @bind-Value="parent.HomePhone" />
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    private Parent parent=new Parent();
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    [Inject]
+    AppState AppState { get; set; }
+    private void AddNewParent()
+    {
+        parent.Id = AppState.ParentIdGenerator.SetId();
+        AppState.Parents.Add(parent);
+        Navigation.NavigateTo("/ParentsList");
+    }
+}

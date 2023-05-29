@@ -1,0 +1,41 @@
+﻿@page "/EditParent"
+@using PschoolBlazor.Shared;
+@inject NavigationManager NavManager
+<h3>Edit parent</h3>
+<PageTitle>Edit parent</PageTitle>
+<EditForm Model="@oldParent" OnValidSubmit="@EditThisParent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="oldParent.FirstName" />
+    <InputText id="lastname" @bind-Value="oldParent.LastName" />
+    <InputText id="email" @bind-Value="oldParent.Email" />
+    <InputText id="username" @bind-Value="oldParent.Username" />
+    <InputText id="homeaddress" @bind-Value="oldParent.HomeAddress" />
+    <InputText id="phone1" @bind-Value="oldParent.Phone1" />
+    <InputText id="workphone" @bind-Value="oldParent.WorkPhone" />
+    <InputText id="homephone" @bind-Value="oldParent.HomePhone" />
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    [Inject]
+    AppState AppState{get; set;}
+    private Parent oldParent=new Parent();
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    protected override void OnInitialized()
+    {
+        oldParent = (Parent)AppState.Parent.Clone();
+    }
+    private void EditThisParent()
+    {
+        AppState.Parent.FirstName=oldParent.FirstName;
+        AppState.Parent.LastName = oldParent.LastName;
+        AppState.Parent.Username = oldParent.Username;
+        AppState.Parent.Email = oldParent.Email;
+        AppState.Parent.HomeAddress = oldParent.HomeAddress;
+        AppState.Parent.Phone1 = oldParent.Phone1;
+        AppState.Parent.WorkPhone = oldParent.WorkPhone;
+        AppState.Parent.HomePhone= oldParent.HomePhone;
+        Navigation.NavigateTo("/ParentsList");
+    }
+}

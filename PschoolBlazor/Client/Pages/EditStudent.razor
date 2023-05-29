@@ -1,0 +1,46 @@
+﻿@page "/EditStudent"
+@using PschoolBlazor.Shared;
+@inject NavigationManager NavManager
+<h3>Edit student</h3>
+<PageTitle>Edit student</PageTitle>
+<EditForm Model="@oldStudent" OnValidSubmit="@EditThisStudent">
+    <DataAnnotationsValidator/>
+    <InputText id="firstname" @bind-Value="oldStudent.FirstName" />
+    <InputText id="lastname" @bind-Value="oldStudent.LastName" />
+    <InputSelect @bind-Value="parentId" Items="parents">
+        @foreach (var parent in parents)
+        {
+            <option value="@parent.Id">@parent.FirstName @parent.LastName</option>
+        }
+    </InputSelect>
+    <button type="submit">Submit</button>
+    <ValidationSummary/>
+</EditForm>
+@code {
+    [Inject]
+    AppState AppState{get; set;}
+    private Student oldStudent=new Student();
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    Parent oldParent;
+    private List<Parent> parents;
+    private int parentId = 0;
+    protected override void OnInitialized()
+    {
+        parents = AppState.Parents;
+        oldStudent = (Student)AppState.Student.Clone();
+        parentId = oldStudent.Parent.Id;
+        oldParent = oldStudent.Parent;
+    }
+    private void EditThisStudent()
+    {
+        AppState.Student.FirstName = oldStudent.FirstName;
+        AppState.Student.LastName = oldStudent.LastName;
+
+        oldParent.Students.Remove(AppState.Student);
+        Parent newParent = parents.FirstOrDefault(p => p.Id == parentId);
+        newParent.Students.Add(AppState.Student);
+        AppState.Student.Parent = newParent;
+        Navigation.NavigateTo("/StudentsList");
+    }
+}

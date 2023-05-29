@@ -1,0 +1,68 @@
+﻿@page "/StudentsList"
+@using PschoolBlazor.Shared
+@inject NavigationManager NavManager
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<h3>StudentsList</h3>
+Filter by parent:
+<InputSelect @bind-Value="parentId" Items="parents">
+    @foreach (var parent in parents)
+    {
+        <option value="@parent.Id">@parent.FirstName @parent.LastName</option>
+    }
+</InputSelect>
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Parent</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in students)
+        {
+            @if (parentId==-1 || student.Parent.Id == parentId)
+            {
+                <tr>
+                    <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.Parent.FirstName @student.Parent.LastName</td>
+                <td>
+                    <button class="btn"><i class="fa fa-align-justify"></i></button>
+                    <button class="btn" @onclick="()=>Edit(student)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn" @onclick="()=>Remove(student)"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+@code {
+    [CascadingParameter]
+    public List<Student> students { get; set; }
+    [Inject] 
+    AppState AppState { get; set; }
+    [Inject]
+    NavigationManager Navigation { get; set; }
+    private int parentId;
+    private List<Parent> parents=new List<Parent>();
+
+    protected override void OnInitialized()
+    {
+        students = AppState.Students;
+        parentId = -1;
+        parents.Add(new Parent(){Id=-1, FirstName="All"});
+        parents.AddRange(AppState.Parents);
+    }
+
+    public void Remove(Student student)
+    {
+        students.Remove(student);
+    }
+    public void Edit(Student student)
+    {
+        AppState.Student = student;
+        Navigation.NavigateTo("/EditStudent");
+    }
+}
